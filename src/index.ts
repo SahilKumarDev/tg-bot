@@ -6,6 +6,8 @@ import { registerMusicCommands } from "./commands/music";
 
 dotenv.config();
 
+const port = process.env.PORT || 4000 
+
 if (!process.env.BOT_TOKEN) {
   throw new Error("BOT_TOKEN is not defined in the environment variables.");
 }

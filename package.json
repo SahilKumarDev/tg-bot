@@ -1,0 +1,27 @@
+{
+  "name": "tg-bot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "npx ts-node src/index.ts"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "@distube/ytdl-core": "^4.16.10",
+    "axios": "^1.9.0",
+    "docx": "^9.5.0",
+    "dotenv": "^16.5.0",
+    "node-telegram-bot-api": "^0.66.0",
+    "ytdl-core": "^4.11.5"
+  },
+  "devDependencies": {
+    "@types/node": "^22.15.23",
+    "@types/node-telegram-bot-api": "^0.64.8",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.8.3"
+  }
+}

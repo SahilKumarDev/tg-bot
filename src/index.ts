@@ -4,8 +4,10 @@ import ytSearch from "yt-search";
 import fs from "fs";
 import path from "path";
 import ffmpeg from "fluent-ffmpeg";
+import dotenv from "dotenv";
+dotenv.config();
 
-ffmpeg.setFfmpegPath("C:\\ffmpeg\\bin\\ffmpeg.exe"); // or full path like "C:\\ffmpeg\\bin\\ffmpeg.exe"
+ffmpeg.setFfmpegPath("C:\\ffmpeg\\bin\\ffmpeg.exe");
 
 interface MusicQueue {
   [chatId: string]: {
@@ -28,13 +30,6 @@ class TelegramMusicBot {
   constructor(token: string) {
     this.bot = new TelegramBot(token, { polling: true });
     this.setupHandlers();
-    this.ensureTempDir();
-  }
-
-  private ensureTempDir() {
-    if (!fs.existsSync(this.tempDir)) {
-      fs.mkdirSync(this.tempDir, { recursive: true });
-    }
   }
 
   private setupHandlers() {
@@ -66,7 +61,6 @@ class TelegramMusicBot {
       try {
         await this.searchAndQueue(chatId, query);
       } catch (error) {
-        // console.error("Error in play command:", error);
         this.bot.sendMessage(
           chatId,
           "❌ Error occurred while searching for the song."
@@ -156,7 +150,6 @@ class TelegramMusicBot {
         await this.playNext(chatId);
       }
     } catch (error) {
-      // console.error("Search error:", error);
       this.bot.editMessageText("❌ Error searching for music!", {
         chat_id: chatId,
         message_id: loadingMsg.message_id,
@@ -199,7 +192,6 @@ class TelegramMusicBot {
         }
       }, this.parseDurationToMs(currentSong.duration));
     } catch (error) {
-      // console.error("Playback error:", error);
       this.bot.sendMessage(chatId, `❌ Error playing: ${currentSong.title}`);
       chatQueue.currentIndex++;
       this.playNext(chatId);
@@ -237,16 +229,12 @@ class TelegramMusicBot {
           .format("mp3")
           .save(outputFile)
           .on("end", () => {
-            // console.log(`Audio conversion completed: ${song.title}`);
             resolve();
           })
           .on("error", (err) => {
-            // console.error(`FFmpeg error: ${err.message}`);
             reject(err);
           })
-          .on("progress", (progress) => {
-            // console.log(`Processing: ${progress.percent?.toFixed(2)}% done`);
-          });
+          .on("progress", (progress) => {});
       });
 
       // Check if file exists and has content
@@ -259,10 +247,7 @@ class TelegramMusicBot {
         duration: this.parseDurationToSeconds(song.duration),
         caption: `🎵 ${song.title}`,
       });
-
-      // console.log(`Successfully sent audio: ${song.title}`);
     } catch (error) {
-      // console.error("Download/Send error:", error);
       // Fallback: send song info as text message
       this.bot.sendMessage(
         chatId,
@@ -277,11 +262,8 @@ class TelegramMusicBot {
       try {
         if (fs.existsSync(outputFile)) {
           fs.unlinkSync(outputFile);
-          // console.log(`Cleaned up temp file: ${outputFile}`);
         }
-      } catch (cleanupError) {
-        // console.error("Cleanup error:", cleanupError);
-      }
+      } catch (cleanupError) {}
     }
   }
 
@@ -361,7 +343,7 @@ class TelegramMusicBot {
   }
 }
 
-const BOT_TOKEN = "7891370085:AAEcvim-9M60gChdJQxhjxaahmx2KIE-eec";
+const BOT_TOKEN = process.env.BOT_TOKEN!;
 
 const musicBot = new TelegramMusicBot(BOT_TOKEN);
 console.log("🎵 Telegram Music Bot started successfully!");
